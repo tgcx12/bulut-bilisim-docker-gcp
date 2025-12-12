@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Klinik Randevu Sistemi | Hasta Paneli</title>
+  <style>
+    :root{
+      --bg:#0b1220; --text:#e8efff; --muted:#93a4c7;
+      --brand:#4f7cff; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --border:rgba(255,255,255,.10); --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:18px; --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--font); color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 15% 10%, rgba(79,124,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 85% 25%, rgba(34,197,94,.20), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(11,18,32,.65);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar{
+      width:min(1100px, 100%);
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px; }
+    .pill{
+      font-size:12px; color:var(--muted);
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(0,0,0,.12);
+    }
+    .btn{
+      border:none;
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      color:var(--text);
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--border);
+      font-weight:700;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg, var(--brand), #7aa2ff);
+      border-color: rgba(79,124,255,.35);
+      box-shadow: 0 12px 30px rgba(79,124,255,.25);
+    }
+    main{
+      width:min(1100px, 100%);
+      margin:0 auto;
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px){ main{grid-template-columns:1fr} }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 10px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .card .hd h2{ margin:0; font-size:16px; }
+    .card .bd{ padding:16px; }
+    label{display:block; margin:12px 0 6px; color:var(--muted); font-size:13px}
+    input, select, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+      resize:vertical;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(79,124,255,.55);
+      box-shadow:0 0 0 4px rgba(79,124,255,.15);
+    }
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width: 520px){ .grid2{grid-template-columns:1fr} }
+
+    .hint{color:var(--muted); font-size:13px; line-height:1.5; margin-top:8px}
+    .msg{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.10);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .chip{
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.12);
+      color:var(--muted);
+      font-size:13px;
+      cursor:pointer;
+    }
+    .chip.ok{ border-color: rgba(34,197,94,.35); color:#c9ffe0; background:rgba(34,197,94,.10) }
+    .chip.busy{ border-color: rgba(239,68,68,.35); color:#ffd2d2; background:rgba(239,68,68,.10); cursor:not-allowed }
+
+    table{width:100%; border-collapse:collapse; font-size:14px}
+    th, td{padding:12px 10px; border-bottom:1px solid var(--border); text-align:left}
+    th{color:var(--muted); font-size:12px; letter-spacing:.3px; text-transform:uppercase}
+    .status{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.10);
+    }
+    .dot{width:8px;height:8px;border-radius:50%}
+    .st-pending .dot{background:var(--warn)}
+    .st-confirmed .dot{background:var(--ok)}
+    .st-cancelled .dot{background:var(--danger)}
+    .footer-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+
+    .disabled{
+      opacity:.55;
+      pointer-events:none;
+      user-select:none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">
+    <div class="brand">
+      🩺 Klinik Randevu Sistemi
+      <span class="pill">Hasta Paneli</span>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <span class="pill" id="who">{{ session.get("user_email","") }}</span>
+      <a class="btn" href="/logout">Çıkış</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Left: Appointment request -->
+  <section class="card">
+    <div class="hd">
+      <h2>Randevu Talebi Oluştur</h2>
+      <span class="pill">Klinik → Bölüm → Doktor → Saat</span>
+    </div>
+    <div class="bd">
+
+      {% if hata %}
+        <div class="msg">{{ hata }}</div>
+      {% endif %}
+      {% if mesaj %}
+        <div class="msg">{{ mesaj }}</div>
+      {% endif %}
+
+      {% if soon_list and (soon_list|length) > 0 %}
+        <div class="msg">
+          <b>Yaklaşan randevunuz var:</b>
+          <ul style="margin:8px 0 0 18px;">
+            {% for a in soon_list %}
+              <li>
+                {{ a.start_at.strftime("%Y-%m-%d %H:%M") }}
+                • {{ a.doctor.full_name }}
+                ({{ a.doctor.department.name }} / {{ a.doctor.department.clinic.name }})
+                • {{ a.status }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form id="reqForm" action="/" method="post">
+        <!-- Klinik -->
+        <label for="clinic">Klinik</label>
+        <select id="clinic" name="clinic_id" required>
+          <option value="">Klinik seçiniz</option>
+          {% for c in clinics %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+        <div class="hint">Klinik seçtikten sonra bölüm ve doktor listesi gelir.</div>
+
+        <div id="stepArea" class="disabled">
+          <div class="grid2">
+            <div>
+              <label for="department">Bölüm (Poliklinik)</label>
+              <select id="department" name="department_id" required>
+                <option value="">Önce klinik seçiniz</option>
+              </select>
+            </div>
+            <div>
+              <label for="doctor">Doktor</label>
+              <select id="doctor" name="doctor_id" required>
+                <option value="">Önce bölüm seçiniz</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label for="date">Tarih</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div>
+              <label for="time">Saat</label>
+              <select id="time" name="time" required>
+                <option value="">Önce doktor ve tarih seçiniz</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="note">Şikayet / Not</label>
+          <textarea id="note" name="note" rows="4" placeholder="Örn: 3 gündür boğaz ağrısı ve ateş..."></textarea>
+
+          <div class="footer-actions">
+            <button class="btn primary" type="submit">Randevu Talep Et</button>
+            <button class="btn" type="button" onclick="suggestSlots()">Uygun Saat Öner</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="hint">Uygun Saat Önerileri</div>
+            <div class="chips" id="suggestions"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Right: My appointments -->
+  <section class="card">
+    <div class="hd">
+      <h2>Randevularım</h2>
+      <button class="btn" type="button" onclick="window.location.reload()">Yenile</button>
+    </div>
+    <div class="bd" style="padding-top:6px">
+      <table>
+        <thead>
+          <tr>
+            <th>Tarih</th>
+            <th>Saat</th>
+            <th>Klinik</th>
+            <th>Bölüm</th>
+            <th>Doktor</th>
+            <th>Durum</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in my_appointments %}
+            <tr>
+              <td>{{ a.start_at.strftime("%Y-%m-%d") }}</td>
+              <td>{{ a.start_at.strftime("%H:%M") }}</td>
+              <td>{{ a.doctor.department.clinic.name }}</td>
+              <td>{{ a.doctor.department.name }}</td>
+              <td>{{ a.doctor.full_name }}</td>
+              <td>
+                {% if a.status == "confirmed" %}
+                  <span class="status st-confirmed"><span class="dot"></span>Onaylandı</span>
+                {% elif a.status == "cancelled" %}
+                  <span class="status st-cancelled"><span class="dot"></span>İptal</span>
+                {% else %}
+                  <span class="status st-pending"><span class="dot"></span>Beklemede</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not my_appointments or (my_appointments|length)==0 %}
+        <div style="margin-top:10px; color:var(--muted); font-size:12px;">Henüz randevunuz yok.</div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+
+<script>
+  const clinicEl = document.getElementById("clinic");
+  const departmentEl = document.getElementById("department");
+  const doctorEl = document.getElementById("doctor");
+  const timeEl   = document.getElementById("time");
+  const stepArea = document.getElementById("stepArea");
+  const sugEl    = document.getElementById("suggestions");
+  const dateEl   = document.getElementById("date");
+
+  // date default today
+  dateEl.valueAsDate = new Date();
+
+  function resetDepartments(){
+    departmentEl.innerHTML = "<option value=''>Önce klinik seçiniz</option>";
+  }
+  function resetDoctors(){
+    doctorEl.innerHTML = "<option value=''>Önce bölüm seçiniz</option>";
+  }
+  function resetTime(){
+    timeEl.innerHTML = "<option value=''>Önce doktor ve tarih seçiniz</option>";
+  }
+
+  async function fetchJSON(url){
+    const r = await fetch(url, { headers: { "Accept": "application/json" }});
+    if(!r.ok) return null;
+    return await r.json();
+  }
+
+  async function loadDepartments(){
+    sugEl.innerHTML = "";
+    resetDepartments();
+    resetDoctors();
+    resetTime();
+
+    const clinicId = clinicEl.value;
+    if(!clinicId){
+      stepArea.classList.add("disabled");
+      return;
+    }
+
+    stepArea.classList.remove("disabled");
+
+    const data = await fetchJSON(`/api/departments?clinic_id=${encodeURIComponent(clinicId)}`);
+    departmentEl.innerHTML = "<option value=''>Bölüm seçiniz</option>";
+    (data || []).forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = d.name;
+      departmentEl.appendChild(opt);
+    });
+  }
+
+  async function loadDoctors(){
+    sugEl.innerHTML = "";
+    resetDoctors();
+    resetTime();
+
+    const clinicId = clinicEl.value;
+    const departmentId = departmentEl.value;
+
+    if(!clinicId || !departmentId){
+      return;
+    }
+
+    const data = await fetchJSON(`/api/doctors?clinic_id=${encodeURIComponent(clinicId)}&department_id=${encodeURIComponent(departmentId)}`);
+    doctorEl.innerHTML = "<option value=''>Doktor seçiniz</option>";
+    (data || []).forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = d.name;
+      doctorEl.appendChild(opt);
+    });
+  }
+
+  async function loadTimes(){
+    sugEl.innerHTML = "";
+    resetTime();
+
+    const doctorId = doctorEl.value;
+    const date = dateEl.value;
+    if(!doctorId || !date) return;
+
+    const data = await fetchJSON(`/suggestions?date=${encodeURIComponent(date)}&doctor_id=${encodeURIComponent(doctorId)}`);
+    const list = (data && data.suggestions) ? data.suggestions : [];
+
+    timeEl.innerHTML = "<option value=''>Saat seçiniz</option>";
+    list.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      timeEl.appendChild(opt);
+    });
+
+    if(list.length === 0){
+      timeEl.innerHTML = "<option value=''>Uygun saat yok</option>";
+    }
+  }
+
+  async function suggestSlots(){
+    sugEl.innerHTML = "";
+
+    const doctorId = doctorEl.value;
+    const date = dateEl.value;
+
+    if(!clinicEl.value || !departmentEl.value || !doctorId || !date){
+      return;
+    }
+
+    const data = await fetchJSON(`/suggestions?date=${encodeURIComponent(date)}&doctor_id=${encodeURIComponent(doctorId)}`);
+    const list = (data && data.suggestions) ? data.suggestions : [];
+
+    list.slice(0, 8).forEach(t => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip ok";
+      b.textContent = t;
+      b.onclick = () => { timeEl.value = t; };
+      sugEl.appendChild(b);
+    });
+
+    if(list.length === 0){
+      const b = document.createElement("span");
+      b.className = "chip busy";
+      b.textContent = "Uygun saat yok";
+      sugEl.appendChild(b);
+    }
+  }
+
+  clinicEl.addEventListener("change", loadDepartments);
+  departmentEl.addEventListener("change", loadDoctors);
+  doctorEl.addEventListener("change", loadTimes);
+  dateEl.addEventListener("change", loadTimes);
+
+  // ilk açılış
+  if(!clinicEl.value){
+    stepArea.classList.add("disabled");
+  }
+</script>
+
+</body>
+</html>

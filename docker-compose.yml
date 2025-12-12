@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: randevu
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://app:app123@db:5432/randevu
+      ADMIN_EMAIL: admin@klinik.com
+      ADMIN_PASSWORD: admin123
+      SECRET_KEY: secret123
+    ports:
+      - "8000:5000"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
