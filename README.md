@@ -1,89 +1,124 @@
 
+
 # 🏥 Bulut Tabanlı Randevu Yönetim Sistemi
 
-[cite_start]Bu proje, **Bulut Bilişimde Sanallaştırma Teknolojilerine Giriş** kapsamında geliştirilmiş web tabanlı bir randevu yönetim uygulamasıdır[cite: 1, 4]. [cite_start]Uygulama, **Docker** konteyner teknolojisi kullanılarak geliştirilmiş ve **Google Cloud Platform (GCP)** Compute Engine üzerinde çalışan bir sanal makineye dağıtılmıştır[cite: 10, 11].
+Bu proje, **Bulut Bilişimde Sanallaştırma Teknolojilerine Giriş** dersi kapsamında geliştirilmiş, web tabanlı bir randevu yönetim sistemidir. Uygulama, **Docker** konteyner teknolojisi kullanılarak geliştirilmiş ve **Google Cloud Platform (GCP)** üzerinde çalışan bir **Compute Engine sanal makinesi** üzerinde dağıtılmıştır.
 
-[cite_start]Projenin temel amacı, bulut bilişim ortamında sanallaştırma teknolojilerinin (Docker & Virtual Machine) pratik kullanımını ve avantajlarını göstermektir[cite: 27, 31].
+Projenin temel amacı, bulut bilişim ortamında sanallaştırma teknolojilerinin (Docker ve Virtual Machine) nasıl kullanıldığını uygulamalı olarak göstermektir.
+
+---
 
 ## 🚀 Proje Özellikleri
 
-Uygulama, Kullanıcı ve Yönetici (Admin) olmak üzere iki temel rol üzerine kurgulanmıştır:
+Uygulama iki temel kullanıcı rolü üzerine kuruludur: **Kullanıcı (Hasta)** ve **Yönetici (Admin)**.
 
-### 👤 Kullanıcı (Hasta) Modülü
-* [cite_start]**Kayıt ve Giriş:** Güvenli oturum yönetimi ve kullanıcı kaydı[cite: 30, 154].
-* [cite_start]**Dinamik Randevu Alma:** Klinik, Bölüm ve Doktor hiyerarşisine göre dinamik seçim yapabilme[cite: 157].
-* [cite_start]**Akıllı Saat Önerisi:** Seçilen doktorun doluluk durumuna göre yalnızca uygun saat aralıklarının listelenmesi[cite: 30, 176].
-* [cite_start]**Randevu Takibi:** Geçmiş ve gelecek randevuların durumunu (Beklemede, Onaylı, İptal) görüntüleme[cite: 180].
+### 👤 Kullanıcı (Hasta)
 
-### 🛠 Yönetici (Admin) Paneli
-* [cite_start]**Dashboard:** Toplam, günlük ve bekleyen randevu istatistikleri[cite: 189].
-* [cite_start]**Randevu Yönetimi:** Randevuları onaylama, iptal etme veya silme işlemleri[cite: 160, 192].
-* [cite_start]**Veri Yönetimi:** Sisteme yeni Klinik, Bölüm ve Doktor ekleyebilme[cite: 196].
-* [cite_start]**Filtreleme:** Randevuları duruma, doktora veya tarihe göre filtreleyerek görüntüleme[cite: 190, 191].
+* Kullanıcı kaydı ve giriş sistemi
+* Klinik, bölüm ve doktora göre randevu alma
+* Doktorun doluluk durumuna göre uygun saat önerileri
+* Geçmiş ve gelecek randevuları görüntüleme
+* Randevu durumlarını takip etme (Beklemede, Onaylı, İptal)
 
-## 🏗 Sistem Mimarisi ve Teknolojiler
+### 🛠 Yönetici (Admin)
 
-Proje, **mikroservis** mimarisine benzer bir yapıda, uygulama ve veritabanı olmak üzere iki ayrı konteynerden oluşmaktadır. [cite_start]Bu konteynerler dahili bir ağ üzerinden haberleşir[cite: 26, 66].
-
-| Bileşen | Teknoloji | Açıklama |
-| :--- | :--- | :--- |
-| **Backend / Web** | Python (Flask) | [cite_start]Uygulama mantığı ve API uç noktaları[cite: 44]. |
-| **Veritabanı** | PostgreSQL | [cite_start]İlişkisel veri tutarlılığı için kullanılmıştır[cite: 69, 75]. |
-| **Sanallaştırma** | Docker & Compose | [cite_start]Uygulama ve veritabanının izole çalıştırılması[cite: 42]. |
-| **ORM** | SQLAlchemy | [cite_start]Veritabanı nesne-ilişkisel eşleşmesi[cite: 77]. |
-| **Frontend** | HTML/CSS/JS | [cite_start]Kullanıcı arayüzü[cite: 44, 174]. |
-| **Cloud** | Google Cloud (GCP) | [cite_start]Compute Engine VM üzerinde barındırma[cite: 41, 201]. |
-
-### 📂 Veritabanı Yapısı
-[cite_start]Sistem `Users`, `Clinics`, `Departments`, `Doctors` ve `Appointments` olmak üzere 5 ana tablodan oluşur[cite: 83]. [cite_start]Veri bütünlüğü için *Foreign Key* ve *Unique* kısıtlamaları uygulanmıştır[cite: 110, 115].
-
-## ⚙️ Kurulum ve Çalıştırma (Local & Docker)
-
-[cite_start]Projeyi kendi bilgisayarınızda veya bir sunucuda çalıştırmak için Docker'ın yüklü olması yeterlidir[cite: 210].
-
-1.  **Repoyu Klonlayın:**
-    ```bash
-    git clone [https://github.com/kullaniciadiniz/randevu-yonetim-sistemi.git](https://github.com/kullaniciadiniz/randevu-yonetim-sistemi.git)
-    cd randevu-yonetim-sistemi
-    ```
-
-2.  **Docker Compose ile Ayağa Kaldırın:**
-    Uygulama ve veritabanını tek komutla başlatmak için:
-    ```bash
-    docker-compose up --build
-    ```
-    [cite_start]*Bu işlem `Dockerfile` kullanılarak imajı oluşturacak ve `docker-compose.yml` dosyasındaki konfigürasyona göre servisleri başlatacaktır[cite: 205, 211].*
-
-3.  **Uygulamaya Erişim:**
-    Tarayıcınızdan aşağıdaki adrese gidin:
-    * **Web Arayüzü:** `http://localhost:5000` (veya sunucu IP adresiniz).
-
-### 🔐 Varsayılan Konfigürasyon
-[cite_start]Proje varsayılan olarak aşağıdaki veritabanı bağlantı ayarlarını kullanır[cite: 78]:
-* **DB Host:** `db` (Docker servis adı)
-* **DB User:** `app`
-* **DB Password:** `app123`
-* **DB Name:** `randevu`
-
-[cite_start]*Not: Veritabanı verileri Docker Volume (`DB Volume`) sayesinde kalıcıdır, konteyner kapatılsa bile veriler kaybolmaz[cite: 70, 214].*
-
-## ☁️ Google Cloud Platform (GCP) Dağıtımı
-
-[cite_start]Bu proje GCP üzerinde şu adımlarla test edilmiştir[cite: 203, 204]:
-1.  GCP Compute Engine üzerinde bir **Sanal Makine (VM)** oluşturuldu.
-2.  VM'e dış IP atandı ve güvenlik duvarından (Firewall) HTTP trafiğine izin verildi.
-3.  VM içine Docker ve Docker Compose kuruldu.
-4.  Proje dosyaları VM'e çekilerek konteynerler çalıştırıldı.
-
-## 📝 Gelecek Çalışmalar
-* HTTPS entegrasyonu ve Ters Vekil (Reverse Proxy) kullanımı.
-* Kubernetes ile otomatik ölçeklendirme.
-* [cite_start]Cloud SQL gibi yönetilen veritabanı servislerine geçiş[cite: 221].
-
-## 👤 Yazar
-**Tuğçe Gül**
-* [cite_start]Kocaeli Üniversitesi - Bilişim Sistemleri Mühendisliği [cite: 2, 4]
-* [cite_start]✉️ İletişim: 221307036@kocaeli.edu.tr [cite: 6]
+* Tüm randevuları görüntüleme
+* Randevuları onaylama, iptal etme veya silme
+* Yeni klinik, bölüm ve doktor ekleme
+* Randevuları duruma, tarihe veya doktora göre filtreleme
+* Günlük ve toplam randevu istatistiklerini görüntüleme
 
 ---
-*Bu proje akademik bir çalışma kapsamında geliştirilmiştir.*
+
+## 🏗 Sistem Mimarisi
+
+Proje, uygulama ve veritabanı olmak üzere **iki ayrı Docker konteyneri**nden oluşmaktadır. Bu konteynerler Docker ağı üzerinden birbiriyle haberleşmektedir.
+
+### Kullanılan Teknolojiler
+
+| Bileşen       | Teknoloji                              |
+| ------------- | -------------------------------------- |
+| Backend       | Python (Flask)                         |
+| Veritabanı    | PostgreSQL                             |
+| ORM           | SQLAlchemy                             |
+| Sanallaştırma | Docker & Docker Compose                |
+| Frontend      | HTML / CSS / JavaScript                |
+| Bulut         | Google Cloud Platform (Compute Engine) |
+
+---
+
+## 📂 Veritabanı Yapısı
+
+Sistem aşağıdaki ana tablolardan oluşmaktadır:
+
+* **Users** → Kullanıcı bilgileri
+* **Clinics** → Klinik bilgileri
+* **Departments** → Kliniklere bağlı bölümler
+* **Doctors** → Bölümlere bağlı doktorlar
+* **Appointments** → Randevu bilgileri
+
+Tablolar arasında **Foreign Key** ilişkileri kurulmuş ve veri bütünlüğü için **Unique** kısıtlamaları uygulanmıştır. Aynı doktora aynı saat için birden fazla randevu alınması engellenmiştir.
+
+---
+
+## ⚙️ Kurulum ve Çalıştırma
+
+### Gereksinimler
+
+* Docker
+* Docker Compose
+
+### 1️⃣ Repoyu Klonlayın
+
+```bash
+git clone https://github.com/kullaniciadiniz/bulut-tabanli-randevu-sistemi.git
+cd bulut-tabanli-randevu-sistemi
+```
+
+### 2️⃣ Docker Compose ile Uygulamayı Başlatın
+
+```bash
+docker-compose up --build
+```
+
+Bu komut:
+
+* Dockerfile kullanarak uygulama imajını oluşturur
+* Flask uygulamasını ve PostgreSQL veritabanını başlatır
+
+### 3️⃣ Uygulamaya Erişim
+
+Tarayıcınızdan aşağıdaki adrese gidin:
+
+```
+http://localhost:5000
+```
+
+(Cloud ortamında çalıştırıyorsanız `localhost` yerine sunucu **External IP** adresini kullanın.)
+
+---
+
+## 🔐 Varsayılan Ayarlar
+
+Varsayılan admin bilgileri Docker Compose ortam değişkenleri ile tanımlanmıştır:
+
+* **Admin E-posta:** `admin@klinik.com`
+* **Admin Şifre:** `admin123`
+
+Veritabanı bağlantısı da yine ortam değişkenleri üzerinden yönetilmektedir.
+
+---
+
+## ☁️ Google Cloud Platform Dağıtımı
+
+Proje, Google Cloud Platform üzerinde oluşturulan bir **Compute Engine sanal makinesi** üzerinde çalıştırılmıştır. Sanal makineye atanmış **External IP** sayesinde uygulama internet üzerinden erişilebilir hale gelmiştir.
+
+---
+
+## 📌 Sonuç
+
+Bu proje ile Docker kullanılarak bir web uygulamasının konteyner haline getirilmesi ve Google Cloud Platform üzerinde çalıştırılması başarıyla gerçekleştirilmiştir. Proje, bulut bilişim ve sanallaştırma teknolojilerinin pratik kullanımını göstermektedir.
+
+--
+
+Söyle, GitHub için son halini birlikte mükemmelleştirelim 🚀
