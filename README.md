@@ -119,6 +119,3 @@ Proje, Google Cloud Platform üzerinde oluşturulan bir **Compute Engine sanal m
 
 Bu proje ile Docker kullanılarak bir web uygulamasının konteyner haline getirilmesi ve Google Cloud Platform üzerinde çalıştırılması başarıyla gerçekleştirilmiştir. Proje, bulut bilişim ve sanallaştırma teknolojilerinin pratik kullanımını göstermektedir.
 
---
-
-Söyle, GitHub için son halini birlikte mükemmelleştirelim 🚀
